@@ -1,0 +1,88 @@
+# Example ruleset, written the way a project would write one.
+#
+# Every entry names a check the core provides and gives it parameters. There is
+# no expression language here on purpose: what a project can say stays bounded,
+# and the rule id plus version is the unit that gets audited and, later, waived.
+#
+# Parameters are validated when the ruleset loads. A misspelled key is an error
+# rather than a check that silently passes everything.
+#
+# The naming conventions themselves are not here: they are declared once, in
+# the fact configuration (example-web.config.yaml), and the rules read the
+# facts derived under them. A rule that needs a convention the configuration
+# does not declare refuses to run rather than passing everything.
+#
+# The failure modes in the comments are real; the ledger in docs/regressions.md
+# records them in full. The values below belong to a fictional project,
+# example-web.
+
+rules:
+  # REG-STYLE-006: a large batch of styles once shipped missing a required
+  # name segment, found by a person reading the entire file after
+  # implementation had started against it. Every referenced text style is
+  # checked against styleNames.pattern; a style that follows another
+  # library's convention on purpose is excused here, visibly.
+  - use: figma.text-style-name.v2
+    severity: error
+    params:
+      exemptPrefixes: []
+
+  # REG-STYLE-005: one breakpoint's declarations under a shared style used a
+  # different font family from all the others. No single node shows it.
+  - use: responsive.text-style-font-consistency.v2
+    severity: error
+    params:
+      requireSame: [fontFamily, fontWeight]
+      # Some designs change the face on purpose. Name the segment of the
+      # pattern that says so and the values that are exempt, rather than
+      # turning the rule off.
+      exemptBy:
+        segment: purpose
+        values: []
+
+  # Artboards drawn narrower than the viewports they stand for make every
+  # measurement taken from them wrong by a scale factor. Which roots are
+  # artboards, and for which breakpoint, comes from responsive.namePattern.
+  - use: artboard.expected-width.v2
+    severity: error
+    params:
+      expected:
+        sm: 375
+        md: 768
+        lg: 1024
+        xl: 1440
+
+  # REG-RESP-004: implementing from three breakpoints and finding the fourth
+  # later, after the component was built around the wrong assumptions.
+  - use: responsive.group-completeness.v1
+    severity: warning
+    params:
+      breakpoints: [sm, md, lg, xl]
+
+  # A list with four items at one breakpoint and seven at the others reads as
+  # a layout decision and was a data mistake.
+  - use: responsive.item-count-consistency.v1
+    severity: warning
+    params:
+      containers: [list, items]
+      # What counts as an item has to be said. Counting every visible child
+      # would count headings, decorations and pagination, and would miss items
+      # nested one wrapper deeper.
+      itemNames: [item, card]
+      # Lists filled from a CMS differ legitimately.
+      exemptSections: [news]
+
+  # A section pinned by absolute coordinates cannot reflow.
+  #
+  # Scoped to a root's own children by name. Projects legitimately layer
+  # backgrounds on outer roots with absolute positioning, and a rule that
+  # flagged those would be wrong more often than right, which is how a check
+  # gets switched off. Needs no responsive declaration: a single frame is
+  # checked the same way.
+  #
+  # Starting as a warning while its false-positive rate is measured; that is
+  # what earns a rule its way up to blocking.
+  - use: layout.content-root-auto-layout.v2
+    severity: warning
+    params:
+      contentRootNames: [contents]

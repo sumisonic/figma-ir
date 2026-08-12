@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+.DS_Store
+.env
+.env.*
+
+# The private denylist for scripts/check-public-data.sh (see the script header).
+scripts/check-public-data.deny
