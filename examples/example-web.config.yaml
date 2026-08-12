@@ -1,0 +1,36 @@
+# Example fact configuration, written the way a project would write one.
+#
+# Both sections are optional. Leave one out and the facts that need it are
+# empty (responsive groups) or absent (parsed style names) — nothing is
+# guessed from the file, and nothing claims to have been checked. A pattern
+# that could not match anything is refused when this file loads.
+#
+# The values below belong to a fictional project, example-web.
+
+# Which roots are the same view at different widths.
+#
+# The pattern is matched against a root's name. It names {section} plus
+# {width} (a design width in px) and/or {breakpoint} (one of the slots below);
+# with both, the two must agree. A root the pattern does not describe can be
+# declared one by one under `explicit`.
+responsive:
+  namePattern: "{section}_{width}"
+  breakpoints:
+    - { slot: sm, designWidthPx: 375 }
+    - { slot: md, designWidthPx: 768 }
+    - { slot: lg, designWidthPx: 1024 }
+    - { slot: xl, designWidthPx: 1440 }
+  # explicit:
+  #   - { nodeId: "12:34", section: home, breakpoint: xl }
+
+# How text styles are named.
+#
+# A template of literals and {segment} placeholders, matched whole. A segment
+# with a closed vocabulary lists it under `allowed`; that is also what pins the
+# split when a separator can occur inside an open segment. The segments carry
+# no built-in meaning — rules refer to them by name (see the ruleset).
+styleNames:
+  pattern: "{group}/{purpose}/{breakpoint}/{language}"
+  allowed:
+    breakpoint: [sm, md, lg, xl]
+    language: [ja, en, all]

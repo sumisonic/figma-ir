@@ -1,0 +1,24 @@
+{
+  "name": "@figma-ir/cli",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "figma-ir": "./dist/main.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@figma-ir/core": "workspace:*",
+    "@figma-ir/web-projection": "workspace:*",
+    "effect": "4.0.0-beta.107",
+    "yaml": "^2.6.0"
+  }
+}

@@ -1,0 +1,24 @@
+# The same check a contributor runs locally, on every push and pull request:
+# typecheck, the synthetic test suite, and the public-data guard over both the
+# working tree and what `git archive` would publish. The guard's private
+# denylist is not available here; its structural checks run on their own.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4   # reads the pnpm version from package.json's packageManager
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm check:archive
